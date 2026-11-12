@@ -1,0 +1,7 @@
+[Flatpak Repo]
+Title=rust-editor beta
+Comment=Builds of rust-editor for invited testers
+Url=https://bastiangrubbe-ship-it.github.io/rust-editor-beta/repo/
+DefaultBranch=beta
+RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
+GPGKey=mDMEavYZQBYJKwYBBAHaRw8BAQdA78+CCaymfL+rtI6BSi5NAhBhl9erX9uDYsSjIqXgmsW0MnJ1c3QtZWRpdG9yIGJldGEgRmxhdHBhayByZXBvc2l0b3J5IChzaWduaW5nIG9ubHkpiJAEExYKADgWIQQe32uk1lxuU//7EzN945tyyto07gUCavYZQAIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRB945tyyto07kEIAP4ufxdwnA2pqdFYenXMx2x8tc5a6rAckIm8Vq2C/QYzoQD/bWdF7CXr7UNPiVrvvCAp6EFdqduAmglIgLRxrgXG5QI=
