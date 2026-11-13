@@ -4,11 +4,142 @@ Ships with the beta. Each entry is a limit that was found, weighed and accepted 
 fixed, with what the person sees. Reasons and rejected fixes are in `DECISIONS.md` (the entry
 named after each item). Newest first.
 
+## Markdown view on Linux and Windows (beta 5, 2026-11-13)
+
+### What it is
+On Linux and Windows a Markdown file (`.md`, `.markdown`) has Split and Rendered modes: the editor draws the page
+itself (headings, paragraphs, lists with numbers and checkboxes, quotes, code blocks, tables, rules). There is no
+webview and nothing is fetched or run. macOS keeps its webview page. HTML, SVG, CSS swatches and PDF still have no
+rendered view on Linux and Windows.
+
+### Read-only, and what a click does
+Nothing can be typed into the view. A click puts the cursor of the source at the start of the block clicked; a
+selection in the source scrolls the view to its block. Text in the view cannot be selected or copied; links are
+shown (blue, underlined) and cannot be followed, and their address is not shown.
+
+### What is shown as text instead
+Raw HTML in the Markdown is shown as its source text, in grey, never interpreted. An image is shown as
+`[image: its description]`; no picture is loaded, also not a local one. Footnotes show as `[name]`. Mathematics is
+shown as its source.
+
+### Emphasis is a colour, not a slant
+`*emphasis*` is drawn in the theme's string colour (green in the built-in themes), upright: the drawing code for
+the interface has no italic face yet. Strong text is bold, struck-out text has a line through it.
+
+### Tables
+Columns share the width equally and a cell is one line: longer text ends in an ellipsis. Column alignment from the
+source is not applied. A table with more columns than fit shows the first ones and "… +N more columns" in the last
+cell drawn.
+
+### Code blocks
+Shown in the fixed-width font without syntax colours; a line wider than the column ends in an ellipsis (no
+sideways scrolling).
+
+### Very large documents have no rendered view
+Above 8 MB of Markdown the pane says the document is too large and shows nothing else; the source view is not
+affected. (The view needs several times the text's size in memory.)
+
+### Long documents
+Only what the window shows (and a little ahead) is laid out, so the bar on the right edge is an estimate until the
+end has been reached once. Jumping to the end (Ctrl+End with the view in focus) lays the rest out over a few
+frames. After each edit the whole document is parsed again on a worker thread and laid out again from the top.
+
+### Deep nesting
+Quotes and lists nested more than 12 deep stop moving right, and more than 32 deep are shown as plain paragraphs.
+
+### Not tested
+Windows (not built since this change). Wayland and NVIDIA. The look in the light theme was checked from a hidden
+screenshot only, like the dark one; no person has seen it on a display. Screen readers get the view's name and not
+its text.
+
+## Macros (beta 5, 2026-11-13)
+
+### One macro, the last one recorded
+"Macro: start recording", "Macro: stop recording" and "Macro: replay" are in the commands; `macro.record` and
+`macro.replay` can be given keys under `"keys"` in the settings file (they have none built in). Recording again
+replaces the macro. There are no named macros and no "replay N times".
+
+### A replay stops at a question
+When a replay brings up "unsaved changes" or "changed on disk" (or a quit is asked for while it runs), it ends
+there, says how many of its events were not run, and leaves the question to you. A macro that was recorded
+answering such a question therefore does not replay past it.
+
+### A recording is lost if the window closes before it is stopped
+Only "stop recording" keeps it.
+
+### The mouse is not recorded
+A click while recording is not part of the macro, and stopping says that one was made. A macro that depends on
+where a click put the cursor will not do the same thing again.
+
+### A replay does what the keys do now, where the cursor is now
+The macro holds keys, typed text and commands, not their effect. It gives the same bytes when the file and the
+cursor are the same as at the recording; with other text under the cursor, with another keyboard preset for the
+keys it used, or with the Find bar left with other options ticked, it does something else. Find is waited for
+(a replay does not press the next key before the matches are in).
+
+### The typed text is in the settings file
+A macro is kept as a list under `"macro"` in `settings.json`, readable text, including everything that was typed
+while recording. Do not record a password. Recording a new macro replaces it; deleting the `"macro"` entry removes it.
+
+### Limits
+A recording stops by itself at 10,000 steps or 256 KB of typed text and keeps what it has; stopping says so. A
+macro in the file that is not understood (a step that is not `type:`, `text:`, `key:` or `command:`, or a control
+character in its text) is not run at all, and the status bar names the step.
+
+### Text typed through an input method
+Composed text (IME, dead keys) is recorded as the text that was committed, not as the keys that composed it.
+
+### Not tested
+macOS and Windows (not built since this change). A recording made with real key presses: the tests hand the app
+keys as the window would, hidden. Replaying into the page views (HTML, Markdown, PDF), which Linux does not have.
+
+## Key bindings (beta 5, 2026-11-13)
+
+### Keys are changed in the settings file, not by pressing them in a panel
+"Keys: show all commands and their keys" lists every command with its id and its keys, and says how to add a line
+under `"keys"` in the settings file. Saving the settings file applies the keys at once. There is no panel that
+records a key press yet.
+
+### One key per line, no sequences
+A binding is one key with its modifiers (`ctrl+shift+d`, `f5`). Two-step keys such as VS Code's Ctrl+K Ctrl+S are
+not read; such a line is named as not understood and left out.
+
+### Commands that have no id
+"Use theme: NAME" for each installed theme and "Switch to TAB" are in the commands but cannot be given a key (the
+default theme, the three presets and tabs 1 to 9 can).
+
+### What cannot be bound
+A key without Ctrl, Alt or Cmd (it would stop typing or moving the cursor, also in the panels), except F1 to F24.
+The Super (Windows) key on Linux and Windows. Option with a letter on a Mac. On Windows, Ctrl+Alt with a key that
+types a character on the layout in use (AltGr) types that character, whatever the file binds.
+
+### The presets are short
+`vscode` and `sublime` add those editors' keys only for commands this editor has (the command palette on F1, the
+settings file, tabs by number on Alt, splits). Ctrl+K and Ctrl+Shift+K are left alone. Commands those editors have and this one does not (go to line,
+duplicate line, a quick-open list) have no key. Emacs and Vim presets are not there.
+
+### A key written twice in the file with the very same spelling
+JSON keeps one of the two lines and the app cannot tell; the same key in two spellings (`Ctrl+D`, `ctrl+d`) is
+named as a conflict.
+
+### Keys on a layout without Latin letters
+A binding names the character the key gives without Shift on the layout in use. On a Cyrillic or Greek layout
+`ctrl+s` in the file does not match the key that types `ы`; the built-in keys have the same limit.
+
+### The list of keys is a file
+`key-bindings.txt` beside the settings file is written each time the list is shown. Changing it changes nothing.
+
+### Not tested
+macOS and Windows (not built since this change; the Mac list of built-in keys is checked against the key tables
+in a Linux test only). Real key presses: the tests hand the app a key as the window would, hidden; no person has
+pressed a rebound key on a real keyboard.
+
 ## Settings file (beta 4, 2026-11-13)
 
-### A setting edited in the file applies at the next start, or with the next change from the palette
-The app does not watch `settings.json`. A change made from the command palette reads the file first, so what was
-edited by hand since is kept and takes effect at that moment.
+### A setting edited in another program applies at the next start, or with the next change from the palette
+The app does not watch `settings.json`. Saved from its tab in the editor, the file applies at once (since the key
+bindings, after beta 4). Edited in another program, it applies at the next start, or when a setting is next changed
+from the command palette (that reads the file first, so what was edited by hand is kept).
 
 ### The file is JSON: no comments, and the app's own layout when it writes
 Keys the app does not know keep their value exactly as written and their place, but the line breaks and
@@ -30,11 +161,54 @@ Theme, word wrap, and reopening the last session. Fonts, sizes, tab width and ke
 macOS and Windows (not built since this change; the folder lock is not taken on Windows); two app windows
 changing settings at the same moment (shown with two writers in one test process only).
 
+## Unsaved text kept across a quit (beta 5, 2026-11-13)
+
+### A quit no longer asks about unsaved changes
+With "keep unsaved text when quitting" on (the default), quitting with unsaved changes asks nothing: the text is
+kept and is back, still unsaved, at the next start. "Settings: keep unsaved text when quitting" in the commands
+turns the question back on. The question also comes back by itself when the text cannot be kept (the copy could not
+be written), and whenever the session is not kept ("reopen the last session at start" off).
+
+### The text is stored unencrypted
+In `recovery/` in the app-data folder, readable by this user only, like the recovery copies before.
+
+### A file that changed since the quit gets the text as a separate tab
+The kept text goes back onto the file's tab only when the file is byte-for-byte what it was at the quit. Otherwise
+it opens as "NAME (unsaved copy)", untitled, and the file's own tab shows the file. Nothing compares or merges the
+two. The same happens for files over 64 MB (they are not hashed), and for a file with bytes that are not text when
+one of those bytes was removed or a replacement character (U+FFFD) was typed or pasted before the quit: the copy
+then holds the text as it was on screen.
+
+### Undo history does not come back
+One undo on a restored tab gives the file's content; the steps made before the quit are gone.
+
+### The text comes back after the whole session has
+With hundreds of tabs the unsaved text appears when the last tab has been restored. A quit before that hands the
+text on to the next start; a crash or a kill before that leaves the copies named in the status bar at the next
+start (folder `recovery/kept/`), not restored.
+
+### A crash, `kill -9` or power loss still only names the copies
+As before (the owner's decision of 2026-11-12): the app never restores those by itself.
+
+### Windows: a launch that ends before its window exists
+On Linux and macOS such a launch (a file named on the command line that does not open, no display) hands the kept
+text on to the next start. On Windows it leaves the copies, which the next start names in the status bar and keeps
+in `recovery/kept/`.
+
+### A second window open at the same time
+Each window keeps its own text at its quit and the next start takes all of it. Two windows quitting at the same
+moment were not tested.
+
+### Not tested
+macOS and Windows (not built since this change): the Windows logout (`WM_ENDSESSION`) and renaming the folder while
+its lock is open; a logout through the Linux desktop portal; a really full disk (a folder that refuses writes was
+tested instead); two live windows; anything on a real display.
+
 ## Session restore (beta 4, 2026-11-13)
 
-### Unsaved text and untitled documents do not come back after a quit
-The session holds the folder, the panes, the tabs and the carets. A tab with unsaved changes is asked about at the
-quit as before; an untitled document is not in the list. Keeping unsaved text across restarts is planned next.
+### Beta 4: unsaved text and untitled documents do not come back after a quit
+In beta 4 the session holds the folder, the panes, the tabs and the carets; a tab with unsaved changes is asked
+about at the quit, and an untitled document is not in the list. Later builds keep unsaved text (next section).
 
 ### A file opened from the file manager joins the last session
 Starting the editor by opening a file brings the last session back with that file in front, rather than a window

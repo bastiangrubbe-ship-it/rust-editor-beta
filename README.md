@@ -1,6 +1,6 @@
 # rust-editor beta
 
-Builds of **rust-editor 0.1.0-beta.4** for invited testers. This repository holds only the
+Builds of **rust-editor 0.1.0-beta.5** for invited testers. This repository holds only the
 builds, the install notes and a signed Flatpak repository. There is no source code here.
 
 **Available now: Linux (x86_64).** macOS and Windows follow once their checks are done.
@@ -19,8 +19,8 @@ Download the file from the [releases page](https://github.com/bastiangrubbe-ship
 and check it against `SHA256SUMS.txt` on the same page.
 
 ```bash
-sudo apt install ./rust-editor-0.1.0-beta.4-linux-x86_64.deb    # Debian 12, Ubuntu 22.04 and later
-sudo dnf install ./rust-editor-0.1.0-beta.4-linux-x86_64.rpm    # Fedora 41 and later
+sudo apt install ./rust-editor-0.1.0-beta.5-linux-x86_64.deb    # Debian 12, Ubuntu 22.04 and later
+sudo dnf install ./rust-editor-0.1.0-beta.5-linux-x86_64.rpm    # Fedora 41 and later
 ```
 
 The package is about 7 MB and uses your system's graphics driver and libraries. It adds a menu
@@ -47,9 +47,10 @@ flatpak config --user --set languages en
 
 To update later: `flatpak update --user dev.rusteditor.Editor`.
 
-**Coming from an earlier beta?** `flatpak update` moves you to beta 4. Beta 4 brings your tabs, splits and
-folder back at the next start, and adds a settings file ("Settings: open the settings file" in the command
-palette, Ctrl+Shift+P). Beta 3 added Find in folder (Ctrl+Shift+F).
+**Coming from an earlier beta?** `flatpak update` moves you to beta 5. Beta 5 keeps unsaved text across a quit
+without asking (it is back, still unsaved, at the next start), lets you rebind keys and record a macro (type
+"Keys" or "Macro" in the command palette, Ctrl+Shift+P), and draws Markdown itself. Beta 4 brought tabs, splits
+and the folder back at the next start and added a settings file. Beta 3 added Find in folder (Ctrl+Shift+F).
 If you came from beta 1, `flatpak uninstall --unused` afterwards removes the old GNOME runtime it needed.
 
 The repository is signed. Its key fingerprint is
