@@ -4,6 +4,34 @@ Ships with the beta. Each entry is a limit that was found, weighed and accepted 
 fixed, with what the person sees. Reasons and rejected fixes are in `DECISIONS.md` (the entry
 named after each item). Newest first.
 
+## Linux packages: .deb and .rpm (beta 2, 2026-11-13)
+
+### The packages do not update themselves
+There is no apt or dnf repository (DECISIONS, "Single package files without repositories"). `apt upgrade` and
+`dnf upgrade` never see a newer rust-editor: download the next `.deb` or `.rpm` and install it the same way over the
+old one. The beta does not check for updates either, so nothing tells you a newer file exists.
+
+### The packages are not signed
+Neither file carries a signature, so `apt` and `dnf` cannot check who made it. Compare the SHA-256 checksum from
+`SHA256SUMS-linux.txt` before installing. Fedora's default accepts an unsigned file you name on the command line
+(`localpkg_gpgcheck` is off). If your system turns that check on (`localpkg_gpgcheck=1` in `/etc/dnf/dnf.conf`),
+`sudo dnf install ./file.rpm` stops with "The package is not signed"; install it once with
+`sudo dnf install --nogpgcheck ./file.rpm`, or `sudo rpm -i --nosignature ./file.rpm` on a system without `dnf`.
+`apt` prints a note that it downloads the file "unsandboxed as root" when the file sits in a folder the `_apt` user
+cannot read (your home folder): this is expected for a local file.
+
+### The packages do not pull the desktop's file chooser
+`xdg-desktop-portal` is only suggested, not required: a desktop has it, and a minimal system would otherwise get a
+hundred extra packages. Without a portal, Open and Save As use the in-app path field (see "File panels" below).
+
+### Removing the package keeps your crash logs and recovery copies
+Removal deletes what the package installed. Your own files stay: crash logs and recovery copies in
+`~/.local/share/rust-editor/` are yours, and `apt purge` and `dnf remove` do not touch your home folder.
+
+### Not built for Debian or Fedora releases older than glibc 2.35
+The binary needs glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later); the package says so, and an
+older system refuses it. Only x86_64 is built.
+
 ## Saving (beta 1, line 1, 2026-11-12)
 
 ### Windows: a save can fail for a moment with "insufficient system resources"
@@ -95,13 +123,15 @@ A long notice in the status bar (a save refusal, a recovery note) is drawn over 
 fields on its right instead of being cut short. The fields come back when the notice clears. Cosmetic; to be
 fixed in a later beta.
 
-### Linux: the AppImage uses the system's GTK and WebKitGTK
+### Linux: the AppImage uses the system's libraries
 
 The AppImage holds the editor, its fonts and templates, and nothing else. It is built on Ubuntu
-22.04 and needs glibc 2.35 or newer, plus the system's GTK 3 and WebKitGTK 4.1 libraries (the
-editor links WebKitGTK even though the HTML view is off on Linux), and FUSE 3 to mount itself.
-Without WebKitGTK 4.1 it fails to start with a missing-library message in a terminal and nothing on
-the desktop. The Flatpak brings its own libraries.
+22.04 and needs glibc 2.35 or newer, FUSE 3 to mount itself, and the X11 client libraries
+(libX11, libXcursor, libXi, libXrandr, libxkbcommon-x11; a desktop session has them, a bare
+container may not: the editor then says "Failed to load one of xlib's shared libraries"). It needs no GTK and no
+WebKitGTK: the Linux build does not include the web engine the HTML view would use (the HTML view
+is off on Linux in this beta). The Flatpak brings its own libraries (the freedesktop
+runtime).
 
 ### Linux: the Flatpak can read and write the whole file system
 
