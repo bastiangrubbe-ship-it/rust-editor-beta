@@ -4,6 +4,72 @@ Ships with the beta. Each entry is a limit that was found, weighed and accepted 
 fixed, with what the person sees. Reasons and rejected fixes are in `DECISIONS.md` (the entry
 named after each item). Newest first.
 
+## Settings file (beta 4, 2026-11-13)
+
+### A setting edited in the file applies at the next start, or with the next change from the palette
+The app does not watch `settings.json`. A change made from the command palette reads the file first, so what was
+edited by hand since is kept and takes effect at that moment.
+
+### The file is JSON: no comments, and the app's own layout when it writes
+Keys the app does not know keep their value exactly as written and their place, but the line breaks and
+indentation between keys are the app's when it writes the file.
+
+### A settings tab with unsaved edits is not refreshed
+An open settings tab that has not been typed into shows the file again after a change from the palette. One with
+unsaved edits is left alone; saving it then asks, because the file changed on disk.
+
+### A settings file behind a link
+If `settings.json` is a symbolic link, changes are written to the file it points to and no `.prev` copy is kept
+there (a temporary file appears beside it for a moment). If that file has a mistake, changes from the palette are
+refused until it is mended or the link removed.
+
+### Three settings so far
+Theme, word wrap, and reopening the last session. Fonts, sizes, tab width and key bindings are not settings yet.
+
+### Not checked
+macOS and Windows (not built since this change; the folder lock is not taken on Windows); two app windows
+changing settings at the same moment (shown with two writers in one test process only).
+
+## Session restore (beta 4, 2026-11-13)
+
+### Unsaved text and untitled documents do not come back after a quit
+The session holds the folder, the panes, the tabs and the carets. A tab with unsaved changes is asked about at the
+quit as before; an untitled document is not in the list. Keeping unsaved text across restarts is planned next.
+
+### A file opened from the file manager joins the last session
+Starting the editor by opening a file brings the last session back with that file in front, rather than a window
+with that file alone.
+
+### A file that is not there stays in the list
+A tab whose file is missing at a start is named in the status bar and comes back as a tab when the file does. If
+its folder exists (the file was deleted or moved) it leaves the list after five starts; if its folder is missing
+too (a drive not connected) it stays. "Session: forget what is not there" in the command palette drops such
+entries at once. The same holds for the folder in the tree.
+
+### A long session comes back a few tabs at a time
+The first file is on screen at once; the other tabs follow over the next moments (47 ms of work for 8 small files
+on the test machine; seconds for hundreds of tabs). The list of open files is not written again until they are
+all back.
+
+### What is not restored
+Scroll positions (the view shows the caret), the source/rendered mode of a tab, and selections other than the
+caret. A session with more than four panes keeps all its tabs; those past the fourth pane join the last one.
+
+### Two windows share one session
+The window that ends last is the session. A second window is rare (later launches hand their files to the first).
+
+### A session on a network folder that does not answer can hold the start
+The launch asks the file system whether the session's first file and folder exist before the window opens; a mount
+that hangs holds that question. Not tested.
+
+### A session file kept as `session.json.unread`
+A session file that is there but cannot be read (damaged, made by a newer version and too large, not readable) is
+renamed to `session.json.unread` when the next state is written, never overwritten. Only one such file is kept.
+
+### Not checked
+macOS and Windows (not built since this change); a power cut during a write (the write syncs the file and the
+folder, which a killed process cannot test); a full disk.
+
 ## Find in folder (beta 3, 2026-11-13)
 
 ### What Find in folder does not search
