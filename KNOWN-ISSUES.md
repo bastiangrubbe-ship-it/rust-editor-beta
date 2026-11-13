@@ -4,6 +4,43 @@ Ships with the beta. Each entry is a limit that was found, weighed and accepted 
 fixed, with what the person sees. Reasons and rejected fixes are in `DECISIONS.md` (the entry
 named after each item). Newest first.
 
+## Find in folder (beta 3, 2026-11-13)
+
+### What Find in folder does not search
+Folders whose name starts with a dot (`.git`, `.config`), `node_modules`, anything behind a symbolic link, files over
+64 MB, and files that are not text. The panel's status line counts each kind after a search. There is no setting for
+this yet, and `.gitignore` is not read.
+
+### A file in a legacy encoding is searched as the editor opens it
+Without a BOM a file is read as UTF-8 and its other bytes are kept as they are, so searching for "é" does not find the
+Windows-1252 byte E9. A match that covers such a byte is never replaced ("a match covers bytes that are not valid
+text"); matches beside it are.
+
+### Files a folder replace leaves alone, with the reason
+A file that changed since the search, a read-only file, a file with a second name (a hard link; not checked on
+Windows), a match over bytes that are not valid text, and a replace whose result would open as different text (it
+would leave a byte-order mark first in the file, or join two stray bytes into a character). The status line names the
+first such file and counts the rest; it does not list them all.
+
+### The undo of a folder replace covers the last replace, until the app quits
+"Find in folder: undo the last replace" puts the old text back in each file that still holds exactly what the replace
+wrote; a file changed since is left alone and named. An earlier replace cannot be undone, and nothing is kept across
+a restart. Tabs the replace edited are undone in the tab (Ctrl+Z), not by this command.
+
+### A replace in open tabs runs on the UI thread
+Files on disk are replaced on a worker. Tabs are edited at once, in one step each; with many matches in a very large
+open file the window can pause for that step (the same cost as Replace All in the file).
+
+### A pattern that takes very long on a file holds a cancel until that file gives up
+A regular expression with look-around or back references is given 100 million steps per search; a file it gives up on
+is counted in the status line ("where the pattern took too long"). Esc and a new search stop the walk between matches
+and between files, not inside one search for the next match (1.5 s per such file in the test that provokes it).
+
+### Not checked
+The panel on a real display, with a real keyboard (Linux hidden runs only); macOS and Windows (not built since:
+the Mac is offline); a folder on a network share; a race in which another program swaps a folder for a link in the
+instant between the check and the listing (the search could then read, never write, outside the folder).
+
 ## Linux packages: .deb and .rpm (beta 2, 2026-11-13)
 
 ### The packages do not update themselves
@@ -117,11 +154,10 @@ failed panel looks like a cancelled one; the session log records only that the p
 macOS and Windows warn before the first launch; `INSTALL.md` has the two steps past each warning.
 The Mac app carries only an ad-hoc signature and is not notarised.
 
-### The status bar: a notice can cover the line and encoding fields
+### The status bar: a long notice is cut short
 
-A long notice in the status bar (a save refusal, a recovery note) is drawn over the line/column and encoding
-fields on its right instead of being cut short. The fields come back when the notice clears. Cosmetic; to be
-fixed in a later beta.
+A long notice in the status bar (a save refusal, a recovery note) ends in "…" before the line/column and
+encoding fields. Beta 1 and 2 drew it over them. The cut-off part is shown nowhere else.
 
 ### Linux: the AppImage uses the system's libraries
 
@@ -160,6 +196,15 @@ When the app crashes in a window a person sees, the alert comes from `zenity`, `
 `xmessage`, whichever is installed; with none of them there is no alert, only the crash log, the
 line on stderr, and the notice at the next launch. A crash on a thread other than the main one
 shows no alert: the log is written, and the status bar names it while the window stays up.
+
+### No graphics driver: the message needs the same helper, and a terminal otherwise
+
+A system with no Vulkan driver and no EGL (Linux), no Direct3D 12 or Vulkan (Windows) gets "rust-editor cannot
+start", with what to install, and a log in the crash-log folder; the app then ends with status 1. Beta 1 and 2
+crashed there. On Linux the alert comes from `zenity`, `kdialog` or `xmessage`; with none of them installed the
+message is on stderr only, so a start from the application menu shows nothing. Checked on Linux with the
+drivers hidden (`ci/linux/no-gpu.sh`, with a stand-in for `zenity`); on Windows and macOS only the code path with
+a stand-in was built, not run. A launch that has no display at all (no X server) still stops with an internal error.
 
 ### Only panics leave a crash log
 
@@ -210,9 +255,8 @@ Discard before the logout, only to recover afterwards.
 
 When rust-editor quits while the clipboard (or the PRIMARY selection) still holds its text, `rust-editor
 --clipboard-keeper` takes it over and serves it until another program copies, then ends. It shows in the process list
-meanwhile. A log-out should end it with the X server, but in testing it did not: when the X server it served
-went away, the keeper stayed running (14 left behind across the test runs under Xvfb). Each is a small idle
-process; it ends at the next restart, or with `pkill -f -- --clipboard-keeper`. To be fixed in a later beta.
+meanwhile. It ends when its X server goes away (a log-out), since beta 3; beta 1 and 2 left it running, a
+small idle process that ends at the next restart or with `pkill -f -- --clipboard-keeper`.
 
 ### When the system clipboard cannot be reached, copy and paste stay inside rust-editor without saying so
 

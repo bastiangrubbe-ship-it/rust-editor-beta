@@ -1,6 +1,6 @@
 # Installing the rust-editor beta
 
-Thank you for testing. This is beta `0.1.0-beta.2`. The builds are not signed by Apple or
+Thank you for testing. This is beta `0.1.0-beta.3`. The builds are not signed by Apple or
 Microsoft, so each OS warns once before it first opens. The steps below get you past that warning
 in two steps or fewer.
 
@@ -14,16 +14,16 @@ do yet.
 
 Each download has a SHA-256 checksum in `SHA256SUMS-<os>.txt`. Compare it with yours:
 
-- macOS: `shasum -a 256 ~/Downloads/rust-editor-0.1.0-beta.2-macos-universal.dmg`
-- Windows (PowerShell): `Get-FileHash $HOME\Downloads\rust-editor-0.1.0-beta.2-windows-x86_64.zip`
-- Linux: `sha256sum ~/Downloads/rust-editor-0.1.0-beta.2-linux-x86_64.AppImage` (or `.flatpak`, `.deb`, `.rpm`)
+- macOS: `shasum -a 256 ~/Downloads/rust-editor-0.1.0-beta.3-macos-universal.dmg`
+- Windows (PowerShell): `Get-FileHash $HOME\Downloads\rust-editor-0.1.0-beta.3-windows-x86_64.zip`
+- Linux: `sha256sum ~/Downloads/rust-editor-0.1.0-beta.3-linux-x86_64.AppImage` (or `.flatpak`, `.deb`, `.rpm`)
 
 The long number it prints must match the line in the checksum file. If it doesn't, don't open the
 download. Tell us instead.
 
 ## macOS (12 or later, Apple silicon or Intel)
 
-Install: open `rust-editor-0.1.0-beta.2-macos-universal.dmg`, then drag **rust-editor** onto
+Install: open `rust-editor-0.1.0-beta.3-macos-universal.dmg`, then drag **rust-editor** onto
 **Applications**.
 
 The first time you open it, macOS says it cannot check the app for malicious software:
@@ -38,7 +38,7 @@ both steps: `xattr -dr com.apple.quarantine /Applications/rust-editor.app`
 
 ## Windows (10 or 11, 64-bit)
 
-Install: right-click `rust-editor-0.1.0-beta.2-windows-x86_64.zip`, choose **Extract All…**, and
+Install: right-click `rust-editor-0.1.0-beta.3-windows-x86_64.zip`, choose **Extract All…**, and
 extract it anywhere you like, for example your Documents folder. Keep the extracted folder as it
 is: `rust-editor.exe` needs the `resources` folder beside it.
 
@@ -58,12 +58,12 @@ Four downloads, the same program. Pick one.
   a menu entry and "Open with" for text files. No sandbox: it uses your system's graphics driver and libraries,
   which the package pulls in. No automatic updates.
 
-- **Flatpak** (from the beta repository, or the file `rust-editor-0.1.0-beta.2-linux-x86_64.flatpak`):
+- **Flatpak** (from the beta repository, or the file `rust-editor-0.1.0-beta.3-linux-x86_64.flatpak`):
   runs on any distribution that has
   Flatpak (Fedora, Ubuntu with Flatpak added, Debian, Arch …), with every library it needs. It runs
   without network access, and it can open and save files anywhere you can (it asks for your whole
   file system so that a save can keep a file's permissions, attributes and links).
-- **AppImage** (`rust-editor-0.1.0-beta.2-linux-x86_64.AppImage`): one file, nothing to install, but
+- **AppImage** (`rust-editor-0.1.0-beta.3-linux-x86_64.AppImage`): one file, nothing to install, but
   it uses your system's libraries.
 
 ### .deb (Debian 12, Ubuntu 22.04 and later)
@@ -71,7 +71,7 @@ Four downloads, the same program. Pick one.
 Needs glibc 2.35 or newer. Install the file you downloaded (it pulls in the libraries it needs, X11, xkbcommon,
 Vulkan, EGL and Mesa's drivers, from your distribution):
 
-    sudo apt install ./rust-editor-0.1.0-beta.2-linux-x86_64.deb
+    sudo apt install ./rust-editor-0.1.0-beta.3-linux-x86_64.deb
 
 Start it from your application menu ("rust-editor"), with `rust-editor`, or from a file's **Open with** menu.
 To remove it: `sudo apt purge rust-editor`. Your own crash logs and recovery copies in
@@ -79,12 +79,12 @@ To remove it: `sudo apt purge rust-editor`. Your own crash logs and recovery cop
 
 ### .rpm (Fedora 41 and later)
 
-    sudo dnf install ./rust-editor-0.1.0-beta.2-linux-x86_64.rpm
+    sudo dnf install ./rust-editor-0.1.0-beta.3-linux-x86_64.rpm
 
 Same menu entry and commands. To remove it: `sudo dnf remove rust-editor`.
 The file is not signed. Fedora accepts an unsigned file you name yourself. If your `dnf` is set to check local
 packages (`localpkg_gpgcheck=1`) it stops with "The package is not signed"; then use
-`sudo dnf install --nogpgcheck ./rust-editor-0.1.0-beta.2-linux-x86_64.rpm`.
+`sudo dnf install --nogpgcheck ./rust-editor-0.1.0-beta.3-linux-x86_64.rpm`.
 
 ### Updating the .deb or .rpm
 
@@ -108,7 +108,7 @@ or your software centre's updates, do it too).
 
 1. If your system has never installed from Flathub, add it once:
    `flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`
-2. Install the file: `flatpak install --user ./rust-editor-0.1.0-beta.2-linux-x86_64.flatpak`
+2. Install the file: `flatpak install --user ./rust-editor-0.1.0-beta.3-linux-x86_64.flatpak`
    (or double-click it to open it in your software centre). The first install also downloads the
    freedesktop runtime (26.08) from Flathub, several hundred MB, once.
 
@@ -126,16 +126,16 @@ Needs: glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later) and FU
 There is no signature warning on Linux, but the file must be made executable before it runs:
 
 1. In Files, right-click it, choose **Properties**, and turn on **Executable as Program**
-   (or run `chmod +x rust-editor-0.1.0-beta.2-linux-x86_64.AppImage`).
-2. Double-click it (or run `./rust-editor-0.1.0-beta.2-linux-x86_64.AppImage`).
+   (or run `chmod +x rust-editor-0.1.0-beta.3-linux-x86_64.AppImage`).
+2. Double-click it (or run `./rust-editor-0.1.0-beta.3-linux-x86_64.AppImage`).
 
 If it says FUSE is missing, run it as
-`./rust-editor-0.1.0-beta.2-linux-x86_64.AppImage --appimage-extract-and-run` instead.
+`./rust-editor-0.1.0-beta.3-linux-x86_64.AppImage --appimage-extract-and-run` instead.
 
 ## Check the version
 
 Open the command palette (the **Commands** button at the top of the window, or ⌘⇧P on a Mac)
-and choose **Help: About rust-editor**. It should say `Version 0.1.0-beta.2`.
+and choose **Help: About rust-editor**. It should say `Version 0.1.0-beta.3`.
 
 ## If something goes wrong
 

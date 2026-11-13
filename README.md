@@ -1,6 +1,6 @@
 # rust-editor beta
 
-Builds of **rust-editor 0.1.0-beta.2** for invited testers. This repository holds only the
+Builds of **rust-editor 0.1.0-beta.3** for invited testers. This repository holds only the
 builds, the install notes and a signed Flatpak repository. There is no source code here.
 
 **Available now: Linux (x86_64).** macOS and Windows follow once their checks are done.
@@ -19,8 +19,8 @@ Download the file from the [releases page](https://github.com/bastiangrubbe-ship
 and check it against `SHA256SUMS.txt` on the same page.
 
 ```bash
-sudo apt install ./rust-editor-0.1.0-beta.2-linux-x86_64.deb    # Debian 12, Ubuntu 22.04 and later
-sudo dnf install ./rust-editor-0.1.0-beta.2-linux-x86_64.rpm    # Fedora 41 and later
+sudo apt install ./rust-editor-0.1.0-beta.3-linux-x86_64.deb    # Debian 12, Ubuntu 22.04 and later
+sudo dnf install ./rust-editor-0.1.0-beta.3-linux-x86_64.rpm    # Fedora 41 and later
 ```
 
 The package is about 7 MB and uses your system's graphics driver and libraries. It adds a menu
@@ -47,8 +47,8 @@ flatpak config --user --set languages en
 
 To update later: `flatpak update --user dev.rusteditor.Editor`.
 
-**Coming from beta 1?** `flatpak update` moves you to beta 2 and to the freedesktop runtime.
-After updating, `flatpak uninstall --unused` removes the old GNOME runtime that beta 1 needed.
+**Coming from beta 1 or 2?** `flatpak update` moves you to beta 3. Beta 3 adds Find in folder (Ctrl+Shift+F).
+If you came from beta 1, `flatpak uninstall --unused` afterwards removes the old GNOME runtime it needed.
 
 The repository is signed. Its key fingerprint is
 `1EDF 6BA4 D65C 6E53 FFFB  1333 7DE3 9B72 CADA 34EE`, and `flatpak` refuses anything not
